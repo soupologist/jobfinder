@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Cockroach Labs",
+    "token": "cockroachlabs"
+  },
+  {
+    "name": "Stripe",
+    "token": "stripe"
+  },
+  {
+    "name": "Rubrik",
+    "token": "rubrik"
+  },
+  {
+    "name": "Yugabyte",
+    "token": "yugabyte"
+  },
+  {
+    "name": "Airbnb",
+    "token": "airbnb"
+  },
+  {
+    "name": "Okta",
+    "token": "okta"
+  },
+  {
+    "name": "Coinbase",
+    "token": "coinbase"
+  },
+  {
+    "name": "Tower Research Capital",
+    "token": "towerresearchcapital"
+  },
+  {
+    "name": "Figma",
+    "token": "figma"
+  },
+  {
+    "name": "Vercel",
+    "token": "vercel"
+  },
+  {
+    "name": "Databricks",
+    "token": "databricks"
+  },
+  {
+    "name": "Twilio",
+    "token": "twilio"
+  }
+]
