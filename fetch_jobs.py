@@ -1,5 +1,6 @@
 import requests
 import json
+import pandas as pd
 
 
 # =========================
@@ -7,7 +8,8 @@ import json
 # =========================
 
 # COMPANIES = {c["name"]: c["token"] for c in json.load(open("companies.json"))}
-COMPANIES = ["twilio"]
+companies = pd.read_csv("companies.csv").to_dict("records")
+# COMPANIES = ["groww"]
 
 LOCATION_FILTERS = [
     "bengaluru",
@@ -15,7 +17,8 @@ LOCATION_FILTERS = [
     "india",
     "gurgaon",
     "gurugram",
-    "hyderabad"
+    "hyderabad",
+    "mumbai"
 ]
 
 TITLE_FILTERS = [
@@ -38,7 +41,8 @@ TITLE_EXCLUDES = [
     "principal",
     "director",
     "manager",
-    "support"
+    "support",
+    "reliability"
 ]
 
 # =========================
@@ -83,11 +87,14 @@ def matches_title(title: str) -> bool:
 def main():
     matching_jobs = []
 
-    for token in COMPANIES:
-        print(f"Fetching {token}...")
+    for company in companies:
+        name = company["name"]
+        token = company["token"]
+        company_type = company["type"]
 
         try:
             jobs = fetch_jobs(token)
+            print(f"Fetching {name}...")
 
             for job in jobs:
                 title = job.get("title", "")
@@ -100,7 +107,7 @@ def main():
                     continue
 
                 matching_jobs.append({
-                    "company": token,
+                    "company": name,
                     "title": title,
                     "location": location,
                     "url": job["absolute_url"],

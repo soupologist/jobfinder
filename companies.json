@@ -46,5 +46,33 @@
   {
     "name": "Twilio",
     "token": "twilio"
+  },
+  {
+    "name": "DevRev",
+    "token": "devrev"
+  },
+  {
+    "name": "Toast",
+    "token": "toast"
+  },
+  {
+    "name": "Optiver",
+    "token": "optiver"
+  },
+  {
+    "name": "Graviton Research Capital",
+    "token": "gravitonresearchcapital"
+  },
+  {
+    "name": "IMC",
+    "token": "imc"
+  },
+  {
+    "name": "Groww",
+    "token": "groww"
+  },
+  {
+    "name": "WorldQuant",
+    "token": "worldquant"
   }
 ]
