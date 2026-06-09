@@ -2,6 +2,8 @@ import requests
 import json
 import pandas as pd
 
+from yoe_extractor import extract_seniority, extract_years
+
 
 # =========================
 # CONFIG
@@ -84,6 +86,7 @@ def matches_title(title: str) -> bool:
     )
 
 
+
 def main():
     matching_jobs = []
 
@@ -99,6 +102,7 @@ def main():
             for job in jobs:
                 title = job.get("title", "")
                 location = job.get("location", {}).get("name", "")
+                description = job.get("content", "")
 
                 if not matches_location(location):
                     continue
@@ -106,11 +110,17 @@ def main():
                 if not matches_title(title):
                     continue
 
+                min_years, max_years = extract_years(description)
+                seniority = extract_seniority(title, description)
+
                 matching_jobs.append({
                     "company": name,
                     "title": title,
                     "location": location,
                     "url": job["absolute_url"],
+                    "min_years": min_years,
+                    "max_years": max_years,
+                    "seniority": seniority,
                 })
 
         except Exception as e:
@@ -127,6 +137,14 @@ def main():
         print(f"🏢 {job['company']}")
         print(f"💼 {job['title']}")
         print(f"📍 {job['location']}")
+
+        if job["min_years"] is not None:
+            if job["max_years"] is not None:
+                print(f"📈 Experience: {job['min_years']}-{job['max_years']} years")
+            else:
+                print(f"📈 Experience: {job['min_years']}+ years")
+
+        print(f"🎯 Seniority: {job['seniority']}")
         print(f"🔗 {job['url']}")
 
 
