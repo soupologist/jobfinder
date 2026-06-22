@@ -11,7 +11,12 @@ from yoe_extractor import extract_seniority, extract_years
 
 # COMPANIES = {c["name"]: c["token"] for c in json.load(open("companies.json"))}
 companies = pd.read_csv("companies.csv").to_dict("records")
-# COMPANIES = ["groww"]
+
+# companies = [{
+#     'name': 'SingleStore',
+#     'token': 'singlestore',
+#     'type': 'tech'
+# }]
 
 LOCATION_FILTERS = [
     "bengaluru",
