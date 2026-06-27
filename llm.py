@@ -4,17 +4,15 @@ from html.parser import HTMLParser
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL = "llama3.2"
 
-_PROMPT = """You are screening job postings for a fresher software engineer with 0–2 years of experience (new graduate).
+_PROMPT = """You are screening job postings for a fresher software engineer with 0–2 years of experience.
 
 Job Title: {title}
 
 Job Description:
 {description}
 
-Is this role suitable for a fresher or new graduate? Consider it suitable if:
-- It's explicitly for interns, new grads, or junior engineers
-- It doesn't require more than 2 years of experience
-- The title doesn't include Senior, Staff, Lead, Principal, or similar
+Say YES if the role is suitable for a fresher — it requires 0–2 years of experience OR is explicitly for new grads or interns.
+Say NO if the role requires 3 or more years of experience, OR the title includes Senior, Sr, Staff, Lead, Principal, Director, or Manager.
 
 Reply with ONLY "yes" or "no"."""
 
