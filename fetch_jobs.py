@@ -3,20 +3,14 @@ import json
 import pandas as pd
 
 from yoe_extractor import extract_seniority, extract_years
+from llm import filter_fresher_friendly
 
 
 # =========================
 # CONFIG
 # =========================
 
-# COMPANIES = {c["name"]: c["token"] for c in json.load(open("companies.json"))}
 companies = pd.read_csv("companies.csv").to_dict("records")
-
-# companies = [{
-#     'name': 'SingleStore',
-#     'token': 'singlestore',
-#     'type': 'tech'
-# }]
 
 LOCATION_FILTERS = [
     "bengaluru",
@@ -57,48 +51,30 @@ TITLE_EXCLUDES = [
 
 def fetch_jobs(board_token: str):
     url = f"https://boards-api.greenhouse.io/v1/boards/{board_token}/jobs"
-
     response = requests.get(url, timeout=30)
     response.raise_for_status()
-
     return response.json()["jobs"]
 
 
 def matches_location(location: str) -> bool:
     if not location:
         return False
-
-    location = location.lower()
-
-    return any(
-        term in location
-        for term in LOCATION_FILTERS
-    )
+    return any(term in location.lower() for term in LOCATION_FILTERS)
 
 
 def matches_title(title: str) -> bool:
     title = title.lower()
-
-    if any(
-        exclude in title
-        for exclude in TITLE_EXCLUDES
-    ):
+    if any(exclude in title for exclude in TITLE_EXCLUDES):
         return False
-
-    return any(
-        term in title
-        for term in TITLE_FILTERS
-    )
+    return any(term in title for term in TITLE_FILTERS)
 
 
-
-def main():
+def get_matching_jobs() -> list[dict]:
     matching_jobs = []
 
     for company in companies:
         name = company["name"]
         token = company["token"]
-        company_type = company["type"]
 
         try:
             jobs = fetch_jobs(token)
@@ -111,7 +87,6 @@ def main():
 
                 if not matches_location(location):
                     continue
-
                 if not matches_title(title):
                     continue
 
@@ -119,10 +94,12 @@ def main():
                 seniority = extract_seniority(title, description)
 
                 matching_jobs.append({
+                    "id": job["id"],
                     "company": name,
                     "title": title,
                     "location": location,
                     "url": job["absolute_url"],
+                    "description": description,
                     "min_years": min_years,
                     "max_years": max_years,
                     "seniority": seniority,
@@ -132,12 +109,16 @@ def main():
             print(f"Failed: {token}")
             print(e)
 
+    return matching_jobs
+
+
+def print_jobs(jobs: list[dict], label: str = "MATCHING") -> None:
     print()
     print("=" * 100)
-    print(f"FOUND {len(matching_jobs)} MATCHING JOBS")
+    print(f"FOUND {len(jobs)} {label} JOBS")
     print("=" * 100)
 
-    for job in matching_jobs:
+    for job in jobs:
         print()
         print(f"🏢 {job['company']}")
         print(f"💼 {job['title']}")
@@ -151,6 +132,12 @@ def main():
 
         print(f"🎯 Seniority: {job['seniority']}")
         print(f"🔗 {job['url']}")
+
+
+def main():
+    jobs = get_matching_jobs()
+    jobs = filter_fresher_friendly(jobs)
+    print_jobs(jobs)
 
 
 if __name__ == "__main__":
