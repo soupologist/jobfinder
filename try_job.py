@@ -1,17 +1,18 @@
 """
-Walk through a company's Greenhouse openings one by one and see what the LLM thinks.
+Test the years-of-experience regex against real Greenhouse job postings.
 
 Usage:
     python try_job.py <board-token>
 
 Example:
-    python try_job.py stripe
+    python try_job.py singlestore
 """
 
 import sys
 import requests
 from fetch_jobs import matches_location, matches_title
-from llm import _PROMPT, _strip_html, OLLAMA_URL, MODEL
+from llm import _strip_html
+from extract import min_years_experience
 
 
 def fetch_jobs(board_token: str) -> list[dict]:
@@ -21,16 +22,11 @@ def fetch_jobs(board_token: str) -> list[dict]:
     return r.json()["jobs"]
 
 
-def ask_llm_raw(title: str, description: str) -> str:
-    clean = _strip_html(description)[:3000]
-    prompt = _PROMPT.format(title=title, description=clean)
-    r = requests.post(
-        OLLAMA_URL,
-        json={"model": MODEL, "prompt": prompt, "stream": False},
-        timeout=60,
-    )
+def fetch_job_detail(board_token: str, job_id: int) -> str:
+    url = f"https://boards-api.greenhouse.io/v1/boards/{board_token}/jobs/{job_id}"
+    r = requests.get(url, timeout=30)
     r.raise_for_status()
-    return r.json()["response"].strip()
+    return r.json().get("content", "")
 
 
 def main():
@@ -50,17 +46,18 @@ def main():
 
     for i, job in enumerate(jobs, 1):
         title    = job.get("title", "")
-        location = job.get("location", {}).get("name", "")
-        description = job.get("content", "")
+        location = job.get("location", {}).get("name", "").strip()
+        job_id   = job.get("id")
 
-        url = job.get("absolute_url", "")
         print(f"[{i}/{len(jobs)}] {title}  |  {location}")
-        print(f"  {url}")
+        print(f"  {job.get('absolute_url', '')}")
 
-        answer = ask_llm_raw(title, description)
-        fresher = answer.lower().startswith("yes")
-        icon = "✅" if fresher else "❌"
-        print(f"  {icon}  LLM: \"{answer}\"\n")
+        description = fetch_job_detail(board_token, job_id)
+        clean = _strip_html(description)
+        min_exp = min_years_experience(clean)
+        icon = "✅" if min_exp <= 2 else "❌"
+        print(f"  {icon}  min_exp={min_exp}")
+        print()
 
 
 if __name__ == "__main__":

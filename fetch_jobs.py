@@ -55,6 +55,13 @@ def fetch_jobs(board_token: str):
     return response.json()["jobs"]
 
 
+def fetch_job_description(board_token: str, job_id: int) -> str:
+    url = f"https://boards-api.greenhouse.io/v1/boards/{board_token}/jobs/{job_id}"
+    response = requests.get(url, timeout=30)
+    response.raise_for_status()
+    return response.json().get("content", "")
+
+
 def matches_location(location: str) -> bool:
     if not location:
         return False
@@ -82,12 +89,13 @@ def get_matching_jobs() -> list[dict]:
             for job in jobs:
                 title = job.get("title", "")
                 location = job.get("location", {}).get("name", "")
-                description = job.get("content", "")
 
                 if not matches_location(location):
                     continue
                 if not matches_title(title):
                     continue
+
+                description = fetch_job_description(token, job["id"])
 
                 matching_jobs.append({
                     "id": job["id"],
