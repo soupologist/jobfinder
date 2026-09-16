@@ -3,8 +3,6 @@ import json
 import pandas as pd
 
 import google_jobs
-from llm import filter_fresher_friendly
-
 
 # =========================
 # CONFIG
@@ -36,6 +34,7 @@ TITLE_FILTERS = [
 ]
 
 TITLE_EXCLUDES = [
+    "intern",
     "senior",
     "staff",
     "sr",
@@ -164,7 +163,6 @@ def print_jobs(jobs: list[dict], label: str = "MATCHING") -> None:
 
 def main():
     jobs = get_matching_jobs()
-    jobs = filter_fresher_friendly(jobs)
     print_jobs(jobs)
 
 

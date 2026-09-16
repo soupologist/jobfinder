@@ -11,7 +11,6 @@ Example:
 import sys
 import requests
 from fetch_jobs import matches_location, matches_title
-from llm import _strip_html
 from extract import min_years_experience
 
 
@@ -53,8 +52,7 @@ def main():
         print(f"  {job.get('absolute_url', '')}")
 
         description = fetch_job_detail(board_token, job_id)
-        clean = _strip_html(description)
-        min_exp = min_years_experience(clean)
+        min_exp = min_years_experience(description)
         icon = "✅" if min_exp <= 2 else "❌"
         print(f"  {icon}  min_exp={min_exp}")
         print()

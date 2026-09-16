@@ -22,6 +22,10 @@ Google doesn't run on Greenhouse and has no public jobs API. Its careers site (c
 
 This is undocumented, Google-internal markup, so it's more brittle than a real API — it can change without notice. If the expected structure disappears, the scraper raises instead of quietly returning zero jobs.
 
+I don't want the scraper running every time we do a fetch and it should probably only run once a day. 
+
+## The Plan
+
 I want to have this setup so that I can look at it every once in a while, and I'll see the latest job openings, but those that are relevant to me and my skill level. So, that means we will turn this into a cron job, regularly running and silently watching.
 
 The good thing is, it doesn't matter how fast our retrieval is but how detailed it is and accurate it is. Which is why the next stage of our pipeline will be to go one layer deeper and see what the job actually entails, and decide whether this is a good fit for me or not.
