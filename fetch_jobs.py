@@ -2,6 +2,7 @@ import requests
 import json
 import pandas as pd
 
+import google_jobs
 from llm import filter_fresher_friendly
 
 
@@ -109,6 +110,39 @@ def get_matching_jobs() -> list[dict]:
         except Exception as e:
             print(f"Failed: {token}")
             print(e)
+
+    matching_jobs.extend(get_matching_google_jobs())
+
+    return matching_jobs
+
+
+def get_matching_google_jobs() -> list[dict]:
+    matching_jobs = []
+
+    try:
+        print("Fetching Google...")
+        jobs = google_jobs.fetch_jobs()
+    except Exception as e:
+        print("Failed: google")
+        print(e)
+        return matching_jobs
+
+    for job in jobs:
+        if not matches_location(job["location"]):
+            continue
+        if not matches_title(job["title"]):
+            continue
+
+        description = google_jobs.fetch_job_description(job["id"], job["url"])
+
+        matching_jobs.append({
+            "id": job["id"],
+            "company": job["company"],
+            "title": job["title"],
+            "location": job["location"],
+            "url": job["url"],
+            "description": description,
+        })
 
     return matching_jobs
 

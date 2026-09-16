@@ -2,9 +2,6 @@ from html.parser import HTMLParser
 
 from extract import min_years_experience
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL = "llama3.2"
-
 
 class _Stripper(HTMLParser):
     def __init__(self):
