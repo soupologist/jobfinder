@@ -18,11 +18,17 @@ What we have currently is a script that can go through the Greenhouse API with a
 
 ### Google
 
-Google doesn't run on Greenhouse and has no public jobs API. Its careers site (careers.google.com/jobs/results) does, however, server-render full job cards — title, location, qualifications, job id — in the initial HTML response, and supports deep-linkable pagination via a `page` query param. `google_jobs.py` scrapes that HTML with BeautifulSoup and normalizes it into the same shape the Greenhouse jobs use, so the rest of the pipeline (title/location filters, the DB, the fresher-friendly LLM filter) doesn't need to know the source.
+Google doesn't run on Greenhouse and has no public jobs API. Its careers site (careers.google.com/jobs/results) does, however, server-render full job cards — title, location, qualifications, job id — in the initial HTML response, and supports deep-linkable pagination via a `page` query param. `google_jobs.py` scrapes that HTML with BeautifulSoup and normalizes it into the same shape the Greenhouse jobs use, so the rest of the pipeline (title/location filters, the DB) doesn't need to know the source.
 
 This is undocumented, Google-internal markup, so it's more brittle than a real API — it can change without notice. If the expected structure disappears, the scraper raises instead of quietly returning zero jobs.
 
 I don't want the scraper running every time we do a fetch and it should probably only run once a day. 
+
+### Lever and Ashby
+
+A bunch of the other companies I care about (CRED, Meesho, Zeta, UiPath, etc.) run on Lever or Ashby instead of Greenhouse. Both expose the same kind of clean public JSON API Greenhouse does — one request per company returns every open posting, full description included — so `lever_jobs.py` and `ashby_jobs.py` follow the exact same fetch-and-normalize pattern as the Greenhouse code.
+
+`companies.csv` now has an `ats` column so a company's row says which of the four fetchers (`greenhouse`, `lever`, `ashby`, or the separate Google path) to use. One catch: Lever/Ashby job ids are UUID strings, not the small integers Greenhouse and Google use, so the `seen_jobs` id column had to widen from `INTEGER` to `TEXT` to hold either.
 
 ## The Plan
 

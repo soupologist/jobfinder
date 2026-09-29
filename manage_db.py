@@ -66,12 +66,12 @@ def main():
     p_list.set_defaults(func=cmd_list)
 
     p_set = sub.add_parser("set", help="Update a job's status")
-    p_set.add_argument("id", type=int, help="Job ID")
+    p_set.add_argument("id", help="Job ID")
     p_set.add_argument("status", choices=VALID_STATUSES)
     p_set.set_defaults(func=cmd_set)
 
     p_del = sub.add_parser("delete", help="Delete a single job by ID")
-    p_del.add_argument("id", type=int, help="Job ID")
+    p_del.add_argument("id", help="Job ID")
     p_del.set_defaults(func=cmd_delete)
 
     p_clean = sub.add_parser("clean", help="Bulk-delete jobs by status")
@@ -85,4 +85,5 @@ def main():
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
     main()

@@ -1,8 +1,12 @@
+import sys
+
 import requests
 import json
 import pandas as pd
 
+import ashby_jobs
 import google_jobs
+import lever_jobs
 
 # =========================
 # CONFIG
@@ -75,39 +79,62 @@ def matches_title(title: str) -> bool:
     return any(term in title for term in TITLE_FILTERS)
 
 
+LEVER_ASHBY_FETCHERS = {
+    "lever": lever_jobs.fetch_jobs,
+    "ashby": ashby_jobs.fetch_jobs,
+}
+
+
+def _record(job: dict, company_name: str, description: str) -> dict:
+    return {
+        "id": str(job["id"]),
+        "company": company_name,
+        "title": job["title"],
+        "location": job["location"],
+        "url": job["url"],
+        "description": description,
+    }
+
+
 def get_matching_jobs() -> list[dict]:
     matching_jobs = []
 
     for company in companies:
         name = company["name"]
         token = company["token"]
+        ats = company["ats"]
 
         try:
-            jobs = fetch_jobs(token)
             print(f"Fetching {name}...")
 
-            for job in jobs:
-                title = job.get("title", "")
-                location = job.get("location", {}).get("name", "")
+            if ats == "greenhouse":
+                for job in fetch_jobs(token):
+                    title = job.get("title", "")
+                    location = job.get("location", {}).get("name", "")
 
-                if not matches_location(location):
-                    continue
-                if not matches_title(title):
-                    continue
+                    if not matches_location(location) or not matches_title(title):
+                        continue
 
-                description = fetch_job_description(token, job["id"])
+                    description = fetch_job_description(token, job["id"])
+                    normalized = {
+                        "id": job["id"],
+                        "title": title,
+                        "location": location,
+                        "url": job.get("absolute_url", ""),
+                    }
+                    matching_jobs.append(_record(normalized, name, description))
 
-                matching_jobs.append({
-                    "id": job["id"],
-                    "company": name,
-                    "title": title,
-                    "location": location,
-                    "url": job["absolute_url"],
-                    "description": description,
-                })
+            elif ats in LEVER_ASHBY_FETCHERS:
+                for job in LEVER_ASHBY_FETCHERS[ats](token):
+                    if not matches_location(job["location"]) or not matches_title(job["title"]):
+                        continue
+                    matching_jobs.append(_record(job, name, job["description"]))
+
+            else:
+                print(f"Unknown ats '{ats}' for {name}, skipping.")
 
         except Exception as e:
-            print(f"Failed: {token}")
+            print(f"Failed: {name} ({token})")
             print(e)
 
     matching_jobs.extend(get_matching_google_jobs())
@@ -127,21 +154,11 @@ def get_matching_google_jobs() -> list[dict]:
         return matching_jobs
 
     for job in jobs:
-        if not matches_location(job["location"]):
-            continue
-        if not matches_title(job["title"]):
+        if not matches_location(job["location"]) or not matches_title(job["title"]):
             continue
 
         description = google_jobs.fetch_job_description(job["id"], job["url"])
-
-        matching_jobs.append({
-            "id": job["id"],
-            "company": job["company"],
-            "title": job["title"],
-            "location": job["location"],
-            "url": job["url"],
-            "description": description,
-        })
+        matching_jobs.append(_record(job, job["company"], description))
 
     return matching_jobs
 
@@ -167,4 +184,5 @@ def main():
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
     main()

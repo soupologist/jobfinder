@@ -1,23 +1,27 @@
-name,token,type
-Cockroach Labs,cockroachlabs,tech
-Stripe,stripe,tech
-Rubrik,rubrik,tech
-Yugabyte,yugabyte,tech
-Airbnb,airbnb,tech
-Okta,okta,tech
-Coinbase,coinbase,tech
-Tower Research Capital,towerresearchcapital,quant
-Figma,figma,tech
-Vercel,vercel,tech
-Databricks,databricks,tech
-Twilio,twilio,tech
-DevRev,devrev,tech
-Toast,toast,tech
-Optiver,optiver,quant
-Graviton Research Capital,gravitonresearchcapital,quant
-IMC,imc,quant
-Groww,groww,tech
-WorldQuant,worldquant,quant
-SingleStore,singlestore,tech
-NK Securities Research,nksecuritiesresearch,quant
-Baya Systems,bayasystems,tech
+name,token,type,ats
+Cockroach Labs,cockroachlabs,tech,greenhouse
+Stripe,stripe,tech,greenhouse
+Rubrik,rubrik,tech,greenhouse
+Yugabyte,yugabyte,tech,greenhouse
+Airbnb,airbnb,tech,greenhouse
+Okta,okta,tech,greenhouse
+Coinbase,coinbase,tech,greenhouse
+Tower Research Capital,towerresearchcapital,quant,greenhouse
+Figma,figma,tech,greenhouse
+Vercel,vercel,tech,greenhouse
+Databricks,databricks,tech,greenhouse
+Twilio,twilio,tech,greenhouse
+DevRev,devrev,tech,greenhouse
+Toast,toast,tech,greenhouse
+Optiver,optiver,quant,greenhouse
+Graviton Research Capital,gravitonresearchcapital,quant,greenhouse
+IMC,imc,quant,greenhouse
+Groww,groww,tech,greenhouse
+WorldQuant,worldquant,quant,greenhouse
+SingleStore,singlestore,tech,greenhouse
+NK Securities Research,nksecuritiesresearch,quant,greenhouse
+Baya Systems,bayasystems,tech,greenhouse
+CRED,cred,tech,lever
+Meesho,meesho,tech,lever
+Zeta,zeta,tech,lever
+UiPath,uipath,tech,ashby
