@@ -7,6 +7,7 @@ import pandas as pd
 import ashby_jobs
 import google_jobs
 import lever_jobs
+import zoho_jobs
 
 # =========================
 # CONFIG
@@ -79,9 +80,10 @@ def matches_title(title: str) -> bool:
     return any(term in title for term in TITLE_FILTERS)
 
 
-LEVER_ASHBY_FETCHERS = {
+INLINE_DESCRIPTION_FETCHERS = {
     "lever": lever_jobs.fetch_jobs,
     "ashby": ashby_jobs.fetch_jobs,
+    "zoho": zoho_jobs.fetch_jobs,
 }
 
 
@@ -124,8 +126,8 @@ def get_matching_jobs() -> list[dict]:
                     }
                     matching_jobs.append(_record(normalized, name, description))
 
-            elif ats in LEVER_ASHBY_FETCHERS:
-                for job in LEVER_ASHBY_FETCHERS[ats](token):
+            elif ats in INLINE_DESCRIPTION_FETCHERS:
+                for job in INLINE_DESCRIPTION_FETCHERS[ats](token):
                     if not matches_location(job["location"]) or not matches_title(job["title"]):
                         continue
                     matching_jobs.append(_record(job, name, job["description"]))

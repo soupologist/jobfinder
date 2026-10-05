@@ -28,7 +28,11 @@ I don't want the scraper running every time we do a fetch and it should probably
 
 A bunch of the other companies I care about (CRED, Meesho, Zeta, UiPath, etc.) run on Lever or Ashby instead of Greenhouse. Both expose the same kind of clean public JSON API Greenhouse does — one request per company returns every open posting, full description included — so `lever_jobs.py` and `ashby_jobs.py` follow the exact same fetch-and-normalize pattern as the Greenhouse code.
 
-`companies.csv` now has an `ats` column so a company's row says which of the four fetchers (`greenhouse`, `lever`, `ashby`, or the separate Google path) to use. One catch: Lever/Ashby job ids are UUID strings, not the small integers Greenhouse and Google use, so the `seen_jobs` id column had to widen from `INTEGER` to `TEXT` to hold either.
+### Zoho Recruit
+
+Qure.ai's careers site runs on Zoho Recruit, whose official API needs the company's own OAuth credentials. The public careers page does server-render every open job, description included, as JSON in a hidden `<input>`, so `zoho_jobs.py` reads that instead. For these rows the `token` in `companies.csv` is the careers hostname (e.g. `career.qure.ai`), so any other company on Zoho Recruit is just another row.
+
+`companies.csv` now has an `ats` column so a company's row says which fetcher (`greenhouse`, `lever`, `ashby`, `zoho`, or the separate Google path) to use. One catch: Lever/Ashby job ids are UUID strings, not the small integers Greenhouse and Google use, so the `seen_jobs` id column had to widen from `INTEGER` to `TEXT` to hold either.
 
 ## The Plan
 
